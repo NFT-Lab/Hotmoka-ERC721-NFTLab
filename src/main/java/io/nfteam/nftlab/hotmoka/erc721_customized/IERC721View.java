@@ -1,4 +1,4 @@
-package io.nfteam.nftlab.hotmoka.erc721nftlab;
+package io.nfteam.nftlab.hotmoka.erc721_customized;
 
 import io.takamaka.code.lang.Contract;
 import io.takamaka.code.lang.View;
@@ -34,5 +34,6 @@ public interface IERC721View {
   @View
   boolean isApprovedForAll(Contract owner, Contract operator);
 
+  @View
   IERC721View snapshot();
 }

@@ -1,5 +1,5 @@
-module io.nfteam.nftlab.hotmoka.erc721nftlab {
-  exports io.nfteam.nftlab.hotmoka.erc721nftlab;
-  exports io.nfteam.nftlab.hotmoka.erc721nftlab.extensions;
+module io.nfteam.nftlab.hotmoka.erc721_customized {
+  exports io.nfteam.nftlab.hotmoka.erc721_customized;
+  exports io.nfteam.nftlab.hotmoka.erc721_customized.extensions;
   requires io.takamaka.code;
 }

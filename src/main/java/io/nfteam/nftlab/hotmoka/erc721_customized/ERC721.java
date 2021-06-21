@@ -1,12 +1,10 @@
-package io.nfteam.nftlab.hotmoka.erc721nftlab;
+package io.nfteam.nftlab.hotmoka.erc721_customized;
 
 import io.takamaka.code.lang.*;
 import io.takamaka.code.math.UnsignedBigInteger;
 import io.takamaka.code.util.StorageMap;
 import io.takamaka.code.util.StorageMapView;
 import io.takamaka.code.util.StorageTreeMap;
-
-import java.util.function.Supplier;
 
 public class ERC721 extends Contract implements IERC721Metadata {
   private final String name;
@@ -36,51 +34,44 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ Getters ============
 
-  @Override
-  public final @View
-  String name() {
+  @Override @View
+  public final String name() {
     return name;
   }
 
-  @Override
-  public final @View
-  String symbol() {
+  @Override @View
+  public final String symbol() {
     return symbol;
   }
 
   // ============ Transfer ============
 
-  @Override
-  public @FromContract
-  void safeTransferFrom(Contract from, Contract to, UnsignedBigInteger tokenId) {
+  @Override @FromContract
+  public void safeTransferFrom(Contract from, Contract to, UnsignedBigInteger tokenId) {
     safeTransferFrom(from, to, tokenId, "".getBytes());
   }
 
-  @Override
-  public @FromContract
-  void transferFrom(Contract from, Contract to, UnsignedBigInteger tokenId) {
+  @Override @FromContract
+  public void transferFrom(Contract from, Contract to, UnsignedBigInteger tokenId) {
     Takamaka.require(_isApprovedOrOwner(caller(), tokenId), "ERC721: transfer caller is not owner nor approved");
 
     _transfer(from, to, tokenId);
   }
 
-  @Override
-  public @FromContract
-  void safeTransferFrom(Contract from, Contract to, UnsignedBigInteger tokenId, byte[] data) {
+  @Override @FromContract
+  public void safeTransferFrom(Contract from, Contract to, UnsignedBigInteger tokenId, byte[] data) {
     Takamaka.require(_isApprovedOrOwner(caller(), tokenId), "ERC721: transfer caller is not owner nor approved");
     _safeTransfer(from, to, tokenId, data);
   }
 
-  protected
-  void _safeTransfer(Contract from, Contract to, UnsignedBigInteger tokenId, byte[] data) {
+  protected void _safeTransfer(Contract from, Contract to, UnsignedBigInteger tokenId, byte[] data) {
     _transfer(from, to, tokenId);
     // TODO: Call to _checkOnERC721Received
   }
 
   protected void _beforeTokenTransfer(Contract from, Contract to, UnsignedBigInteger tokenId) { }
 
-  protected
-  void _transfer(Contract from, Contract to, UnsignedBigInteger tokenId) {
+  protected void _transfer(Contract from, Contract to, UnsignedBigInteger tokenId) {
     Takamaka.require(ownerOf(tokenId).equals(from), "ERC721: transfer of token that is not own");
     Takamaka.require(to != null, "ERC721: transfer to the zero address");
 
@@ -98,9 +89,8 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ Approvals ============
 
-  @Override
-  public @FromContract
-  void approve(Contract to, UnsignedBigInteger tokenId) {
+  @Override @FromContract
+  public void approve(Contract to, UnsignedBigInteger tokenId) {
     Contract owner = ownerOf(tokenId);
 
     Takamaka.require(!owner.equals(to), "ERC721: approval to current owner");
@@ -112,40 +102,35 @@ public class ERC721 extends Contract implements IERC721Metadata {
     _approve(to, tokenId);
   }
 
-  private
-  void _approve(Contract to, UnsignedBigInteger tokenId) {
+  private void _approve(Contract to, UnsignedBigInteger tokenId) {
     tokenApprovals.put(tokenId, to);
     event(new Approval(ownerOf(tokenId), to, tokenId));
   }
 
-  @Override
-  public @FromContract
-  void setApprovalForAll(Contract operator, boolean _approved) {
+  @Override @FromContract
+  public void setApprovalForAll(Contract operator, boolean _approved) {
     Takamaka.require(operator != caller(), "ERC721: approve to caller");
 
-    operatorApprovals
-      .computeIfAbsent(caller(), (Supplier<StorageMap<Contract, Boolean>>) StorageTreeMap::new)
-      .put(operator, _approved);
+    operatorApprovals.putIfAbsent(caller(), new StorageTreeMap<>());
+
+    operatorApprovals.get(caller()).put(operator, _approved);
 
     event(new ApprovalForAll(caller(), operator, _approved));
   }
 
-  @Override
-  public @View
-  Contract getApproved(UnsignedBigInteger tokenId) {
+  @Override @View
+  public Contract getApproved(UnsignedBigInteger tokenId) {
     Takamaka.require(_exists(tokenId), "ERC721: approved query for nonexistent token");
 
     return tokenApprovals.get(tokenId);
   }
 
-  @Override
-  public final @View
-  boolean isApprovedForAll(Contract owner, Contract operator) {
+  @Override @View
+  public final boolean isApprovedForAll(Contract owner, Contract operator) {
     return operatorApprovals.getOrDefault(owner, StorageTreeMap::new).getOrDefault(operator, false);
   }
 
-  protected
-  boolean _isApprovedOrOwner(Contract spender, UnsignedBigInteger tokenId) {
+  protected boolean _isApprovedOrOwner(Contract spender, UnsignedBigInteger tokenId) {
     Takamaka.require(_exists(tokenId), "ERC721: operator query for nonexistent token");
     Contract owner = ownerOf(tokenId);
 
@@ -154,19 +139,16 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ MINT ============
 
-  protected
-  void _safeMint(Contract to, UnsignedBigInteger tokenId) {
+  protected void _safeMint(Contract to, UnsignedBigInteger tokenId) {
     _safeMint(to, tokenId, "".getBytes());
   }
 
-  protected
-  void _safeMint(Contract to, UnsignedBigInteger tokenId, byte[] data) {
+  protected void _safeMint(Contract to, UnsignedBigInteger tokenId, byte[] data) {
     _mint(to, tokenId);
     // TODO: _checkOnERC721Received call
   }
 
-  protected
-  void _mint(Contract to, UnsignedBigInteger tokenId) {
+  protected void _mint(Contract to, UnsignedBigInteger tokenId) {
     Takamaka.require(to != null, "ERC721: mint to the zero address");
     Takamaka.require(!_exists(tokenId), "ERC721: token already minted");
     _beforeTokenTransfer(null, to, tokenId);
@@ -179,9 +161,8 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ Token URI ============
 
-  @Override
-  public @View
-  String tokenURI(UnsignedBigInteger tokenId) {
+  @Override @View
+  public String tokenURI(UnsignedBigInteger tokenId) {
     Takamaka.require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
     String baseURI = _baseURI();
@@ -190,16 +171,15 @@ public class ERC721 extends Contract implements IERC721Metadata {
       : "";
   }
 
-  protected @View
-  String _baseURI() {
+  @View
+  protected String _baseURI() {
     return "";
   }
 
   // ============ Balance of ============
 
-  @Override
-  public @View
-  UnsignedBigInteger balanceOf(Contract owner) {
+  @Override @View
+  public UnsignedBigInteger balanceOf(Contract owner) {
     Takamaka.require(owner != null, "ERC721: balance query for the zero address");
 
     return balances.getOrDefault(owner, ZERO);
@@ -207,9 +187,8 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ Owner of ============
 
-  @Override
-  public @View
-  Contract ownerOf(UnsignedBigInteger tokenId) {
+  @Override @View
+  public Contract ownerOf(UnsignedBigInteger tokenId) {
     Contract owner = owners.get(tokenId);
 
     Takamaka.require(owner != null, "ERC721: owner query for nonexistent token");
@@ -226,15 +205,13 @@ public class ERC721 extends Contract implements IERC721Metadata {
     private final StorageMapView<UnsignedBigInteger, Contract> tokenApprovals = ERC721.this.tokenApprovals.snapshot();
     private final StorageMapView<Contract, StorageMap<Contract, Boolean>> operatorApprovals = ERC721.this.operatorApprovals.snapshot();
 
-    @Override
-    public @View
-    UnsignedBigInteger balanceOf(Contract owner) {
+    @Override @View
+    public UnsignedBigInteger balanceOf(Contract owner) {
       return balances.getOrDefault(owner, ZERO);
     }
 
-    @Override
-    public @View
-    Contract ownerOf(UnsignedBigInteger tokenId) {
+    @Override @View
+    public Contract ownerOf(UnsignedBigInteger tokenId) {
       Contract owner = owners.get(tokenId);
 
       Takamaka.require(owner != null, "ERC721: owner query for nonexistent token");
@@ -242,36 +219,32 @@ public class ERC721 extends Contract implements IERC721Metadata {
       return owner;
     }
 
-    @Override
-    public @View
-    Contract getApproved(UnsignedBigInteger tokenId) {
+    @Override @View
+    public Contract getApproved(UnsignedBigInteger tokenId) {
       Takamaka.require(_exists(tokenId), "ERC721: approved query for nonexistent token");
 
       return tokenApprovals.get(tokenId);
     }
 
-    @Override
-    public @View
-    boolean isApprovedForAll(Contract owner, Contract operator) {
+    @Override @View
+    public boolean isApprovedForAll(Contract owner, Contract operator) {
       return operatorApprovals.getOrDefault(owner, StorageTreeMap::new).getOrDefault(operator, false);
     }
 
-    @Override
-    public @View
-    IERC721View snapshot() {
+    @Override @View
+    public IERC721View snapshot() {
       return this;
     }
   }
 
-  @Override
+  @Override @View
   public IERC721View snapshot() {
     return new ERC721Snapshot();
   }
 
   // ============ Burn ============
 
-  protected
-  void _burn(UnsignedBigInteger tokenId) {
+  protected void _burn(UnsignedBigInteger tokenId) {
     Contract owner = ownerOf(tokenId);
 
     _beforeTokenTransfer(owner, null, tokenId);
@@ -287,8 +260,8 @@ public class ERC721 extends Contract implements IERC721Metadata {
 
   // ============ Exists ============
 
-  protected final @View
-  boolean _exists(UnsignedBigInteger tokenId) {
+  @View
+  protected final boolean _exists(UnsignedBigInteger tokenId) {
     return owners.get(tokenId) != null;
   }
 
@@ -299,8 +272,7 @@ public class ERC721 extends Contract implements IERC721Metadata {
    *
    * @param event the event to generate
    */
-  protected final
-  void event(Event event) {
+  protected final void event(Event event) {
     if (generateEvents) {
       Takamaka.event(event);
     }

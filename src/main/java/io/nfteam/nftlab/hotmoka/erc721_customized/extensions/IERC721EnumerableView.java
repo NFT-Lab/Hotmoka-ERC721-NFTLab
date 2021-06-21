@@ -1,6 +1,6 @@
-package io.nfteam.nftlab.hotmoka.erc721nftlab.extensions;
+package io.nfteam.nftlab.hotmoka.erc721_customized.extensions;
 
-import io.nfteam.nftlab.hotmoka.erc721nftlab.IERC721View;
+import io.nfteam.nftlab.hotmoka.erc721_customized.IERC721View;
 import io.takamaka.code.lang.Contract;
 import io.takamaka.code.lang.View;
 import io.takamaka.code.math.UnsignedBigInteger;
