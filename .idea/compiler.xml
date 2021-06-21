@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="hotmoka-erc721-NFTLab" target="16" />
+      <module name="hotmoka-erc721-NFTLab" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
