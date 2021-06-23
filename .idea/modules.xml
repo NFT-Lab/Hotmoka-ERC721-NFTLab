@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/hotmoka-erc721-NFTLab.iml" filepath="$PROJECT_DIR$/hotmoka-erc721-NFTLab.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hotmoka-erc721-customized.iml" filepath="$PROJECT_DIR$/hotmoka-erc721-customized.iml" />
     </modules>
   </component>
 </project>
