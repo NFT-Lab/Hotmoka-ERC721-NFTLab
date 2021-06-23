@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="hotmoka-erc721-NFTLab" />
+        <module name="hotmoka-erc721-customized" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="hotmoka-erc721-NFTLab" target="11" />
+      <module name="hotmoka-erc721-customized" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

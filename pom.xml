@@ -59,7 +59,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/NFT-Lab/Hotmoka-ERC721-NFTLab</url>
+      <url>https://maven.pkg.github.com/NFT-Lab/Hotmoka-ERC721-customized</url>
     </repository>
   </distributionManagement>
 </project>
